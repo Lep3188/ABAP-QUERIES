@@ -1,0 +1,96 @@
+*&---------------------------------------------------------------------*
+*& Report ZLP_DBQUERY_TASK1
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT ZLP_DBQUERY_TASK1.
+
+TABLES SFLIGHT.
+
+TYPES: BEGIN OF T_SFLIGHT,
+       CARRID     TYPE SFLIGHT-CARRID,
+       CONNID     TYPE SFLIGHT-CONNID,
+       FLDATE     TYPE SFLIGHT-FLDATE,
+       PLANETYPE  TYPE SFLIGHT-PLANETYPE,
+       SEATSMAX   TYPE SFLIGHT-SEATSMAX,
+       SEATSOCC   TYPE SFLIGHT-SEATSOCC,
+END OF T_SFLIGHT.
+
+DATA: WA_QUERIES TYPE SFLIGHT,
+      I_QUERIES  TYPE STANDARD TABLE OF sflight.
+
+PERFORM SingLIne. "Runs Single line queries
+
+****Display table Result****
+DATA: I_SFLIGHT   TYPE STANDARD TABLE OF T_SFLIGHT,
+      WA_SFLIGHT  LIKE LINE OF I_SFLIGHT.
+
+SELECT CARRID CONNID FLDATE PLANETYPE SEATSMAX SEATSOCC
+FROM SFLIGHT
+INTO TABLE I_SFLIGHT
+WHERE CARRID = 'LP' .
+
+  WRITE 'SFLIGHT Table'.
+   WRITE:/ SY-ULINE,
+            'AIRLINE CODE',' | ',
+             'FLIGHT CONNECTION NUMBER',' | ',
+             'FLIGHT DATE',' | ',
+             'AIRCRAFT TYPE',' | ',
+             'AIRCRAFT TYPE',' | ',
+             'OCCUPIED SEATS IN ECONOMY CLASS',' | '.
+    WRITE:/ SY-ULINE.
+
+    LOOP AT I_SFLIGHT INTO WA_SFLIGHT.
+      WRITE:/ WA_QUERIES-CARRID,
+              25 WA_SFLIGHT-CONNID,
+              47 WA_SFLIGHT-FLDATE,
+              65 WA_SFLIGHT-PLANETYPE,
+              90 WA_SFLIGHT-SEATSMAX,
+              130 WA_SFLIGHT-SEATSOCC.
+    ENDLOOP.
+
+FORM SingLIne.
+  CLEAR WA_QUERIES.
+  WA_QUERIES-CARRID = 'LP'.
+  WA_QUERIES-CONNID = '123'.
+  WA_QUERIES-FLDATE = SY-DATUM.
+  WA_QUERIES-PLANETYPE = 'F-16'.
+***INSERT****
+
+INSERT SFLIGHT FROM WA_QUERIES.
+
+ IF SY-SUBRC EQ 0.
+   WRITE: 'RECORD ADDED'.
+ ELSE.
+   WRITE 'FAILURE TO ADD'.
+ ENDIF.
+****END of INSERT****
+
+****UPDATE****
+*
+*  UPDATE SFLIGHT SET PLANETYPE = 'P-38'
+*  WHERE CARRID = 'LP' AND CONNID = '123' AND PLANETYPE = 'F-16'.
+* IF SY-SUBRC EQ 0.
+*   WRITE: 'RECORD UPDATED'.
+* ENDIF.
+*****END of UPDATE****
+
+****MODIFY****
+*
+*  MODIFY SFLIGHT FROM WA_QUERIES.
+*
+* IF SY-SUBRC EQ 0.
+*   WRITE: 'RECORD MODIFIED'.
+* ENDIF.
+****END OF MODIFY****
+
+****DELETE****
+*
+*  DELETE FROM SFLIGHT
+*  WHERE CARRID = 'LP' AND CONNID = '123' AND PLANETYPE = 'P-38'.
+*****END of UPDATE****
+* IF SY-SUBRC EQ 0.
+*   WRITE: 'RECORD DELETED'.
+* ENDIF.
+***END OF DELETE****
+ENDFORM.
